@@ -46,7 +46,7 @@ namespace MyInt
     | ⟨pos, neg⟩ => {neg, pos}
 
 
-  #print Quot.sound
+  #print Quot.ind
  
   /- 
   a - b = c - d 
@@ -56,7 +56,6 @@ namespace MyInt
   b - a = d - c
   -/
   private def negateRawInt.respects {x y: RawInt} (xy: x ~ y): negateRawInt x = negateRawInt y := by
-    have t: {x.neg, x.pos} = negateRawInt x := rfl
     apply eqv.sound
     simp_all [eqv, Nat.add_comm] 
 
@@ -65,5 +64,36 @@ namespace MyInt
 
   private theorem raw_int_double_neg_elim: ∀x, x = negate (negate x) := by
     intro x
+    induction x using Quot.ind with
+    | mk a => rfl
+
+  #print Quotient.ind₂
+
+  private def addRawInts: RawInt → RawInt → MyInt
+    | ⟨a, b⟩, ⟨c, d⟩ => {a + c, b + d}
+
+  private def addRawInts.respects 
+    {a b c d: RawInt} 
+    (ac: a ~ c)
+    (bd: b ~ d): addRawInts a b = addRawInts c d := by
+    have summed: _ := Nat.add_equations ac bd
+    apply eqv.sound
+    simp [eqv, Nat.add_assoc, Nat.add_left_comm, Nat.add_comm] at summed ⊢ 
+    exact summed
+
+  def add (τ: MyInt) (β: MyInt): MyInt :=
+    Quotient.liftOn₂ τ β addRawInts @addRawInts.respects
+
+  instance addMyInts: HAdd MyInt MyInt MyInt where
+    hAdd := add
+
+  #print Nat.add_comm
+
+  theorem add.comm: ∀x y: MyInt, x + y = y + x := by
+    intro x y
+    simp_all [HAdd.hAdd, add] 
+    induction x using Quot.ind with | mk x => 
+    induction y using Quot.ind with | mk y => 
+    simp [Quotient.liftOn₂]
     sorry
 end MyInt 

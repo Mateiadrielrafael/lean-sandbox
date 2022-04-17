@@ -42,4 +42,8 @@ namespace Nat
     apply Iff.intro
     . exact add_to_equation_right
     . exact subtract_to_equation_right
+
+  theorem multiply_equation_left: ∀{a b c: Nat}, (a = b) → (c * a = c * b) := by 
+    intro a b c ab
+    rw [ab]
 end Nat

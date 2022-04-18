@@ -46,4 +46,10 @@ namespace Nat
   theorem multiply_equation_left: ∀{a b c: Nat}, (a = b) → (c * a = c * b) := by 
     intro a b c ab
     rw [ab]
+
+  theorem double.addition_is_multiplication (x: Nat): 2 * x = x + x := by
+    induction x with
+    | zero => simp
+    | succ px ic => 
+      simp [<-Nat.add_one, Nat.left_distrib, ic, Nat.add_left_comm, Nat.add_assoc]
 end Nat
